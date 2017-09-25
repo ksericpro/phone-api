@@ -1,0 +1,22 @@
+https://www.codementor.io/olatundegaruba/nodejs-restful-apis-in-10-minutes-q0sgsfhbd
+
+Open Port 3001 in aws console
+
+Change localhost to ip:
+http://54.169.174.218
+
+Run as a service in ubuntu:
+https://gist.github.com/jobsamuel/6d6095d52228461f3c53
+
+sudo apt-get install upstart-sysv
+sudo update-initramfs -u
+sudo reboot
+reboot
+
+start run-phoneapi
+status run-phoneapi
+lsof -i -P | grep 3001
+
+
+https://www.npmjs.com/package/node-pushnotifications
+

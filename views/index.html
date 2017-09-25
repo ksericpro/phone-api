@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Phone API Home</title>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<style>
+ #outputdiv {
+	background-color:green;
+    border-radius: 25px;
+	color:white;
+	height:40pt;
+	padding: 10px 10px 10px 10px;
+}
+
+</style>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script>
+//busy
+function setBusy(state)
+{
+	if (state)
+		$('#dlgPleaseWait').modal('show');
+	else
+		$('#dlgPleaseWait').modal('hide');
+}
+		
+function load()
+{
+	$("#apikey").val("AAAAkXXcN8g:APA91bEgrbFSotQbGEssGUQoEHa9jcbrWLaVL5OjqSNeduY2-kMmSc9sgwEkZ1XpZRDAhUokovrSGb5OARhdLCOOZ2926soVaMSEcYWg-42TNVepb9-yHfRyVGou0joE7IsbYyBjl17r");
+	$("#gcmid").val("APA91bHkcUvXwBzHPMHXjDtnXXSIUK2Iqxrz5uqJT7nor2uUAsp6JCCvF6ugRt6Jofr_RfgGTFnqzJrBJ1kkPW3rbAvqs9qoGeI9HqmzHwJ43zgc43TYvAHHHVbttxQIVqey6PdcsAJD");
+}
+
+//Send
+function gcm_send()
+{
+	var data = JSON.stringify({
+		api: $("#apikey").val(),
+		registrationids: [$("#gcmid").val()],
+		message_title: $("#msg_title").val(),
+		message_body: $("#msg_body").val()
+	});
+	console.log(data);
+	$("#output").html("sending.."+data);
+	fetch("http://localhost:3001/api/gcm_push", {
+		method: 'POST',
+		model: 'cors',
+		body: data,
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		}			
+	}).then(function(response) { 
+		return response.json();	
+	}).then(function(j) {
+		$("#output").html(JSON.stringify(j));
+	}).catch(function(err) {
+		$("#output").html(err);
+	});
+}
+
+function send()
+{
+	if (($("#apikey").val()) && ($("#gcmid").val()))
+	{
+		setBusy(true);
+		console.log("Sending");
+		gcm_send();
+		setBusy(false);
+	}
+	else
+		$("#output").html("API Key and GCMIDs cannot be empty!!");	
+}
+
+$(function() {
+	// Handler for .ready() called.
+	console.log("ready");
+	$(document).keypress(function(e){
+    if (e.which == 13){
+        $("#sendbutton").click();
+    }
+});
+});
+</script>
+</head>
+<body>
+<div>
+<div>
+<nav class="navbar navbar-inverse" role="navigation" style="padding-left:130px;">
+       <ul class="nav navbar-nav">
+      <li class="active"><a href="/">GCM<span class="sr-only">(current)</span></a></li>
+      <li><a href="/apn">APN</a></li>
+      <!--<li><a href="/contact">Contact us</a></li>-->
+    </ul>
+</nav>
+</div>
+
+<div class="jumbotron">
+ 
+   <div class="container">
+   <div class="form-element" id="outputdiv">
+		<span id="output"></span>
+   </div>
+   <div class="row">
+        <div class="col-lg-12">
+            <h3 class="page-header">
+                GCM Pusher
+            </h3>
+        </div>			
+   </div>
+    
+   <div class="row">
+	<div class="form-group">
+		<label for="apikey">API Key</label>
+		<input type="input" class="form-control" id="apikey" aria-describedby="apikeyHelp" placeholder="Enter API Key">
+		<small id="apikeyHelp" class="form-text text-muted">We'll never share your api key with anyone else.</small>
+	</div>
+	<div class="form-group">
+		<label for="gcmid">GCM ID</label>
+		<input type="input" class="form-control" id="gcmid" placeholder="Enter gcm id">
+	</div>
+	<div class="form-group">
+		<label for="msgtitle">Title</label>
+		<input type="input" class="form-control" id="msg_title" placeholder="Enter Message Title">
+	</div>
+	<div class="form-group">
+		<label for="msgbody">Content</label>
+		<input type="input" class="form-control" id="msg_body" placeholder="Enter Message Content">
+	</div>
+	<button type="button" class="btn btn-primary" onclick="load()">Load Default</button>
+	<button type="button" id="sendbutton" class="btn btn-primary" onclick="send()">Submit</button>
+	</div>
+  </div>
+
+
+</div>
+</div>
+</body>
+</html>
+
+<!-- Modal Start here-->
+<div class="modal fade bs-example-modal-sm" id="dlgPleaseWait" tabindex="-1"
+    role="dialog" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <span class="glyphicon glyphicon-time">
+                    </span>Please Wait
+                 </h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-info
+                    progress-bar-striped active"
+                    style="width: 100%">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
